@@ -43,11 +43,13 @@ pnpm run dev
 
 ## 3. One Real Edge Case
 
-**Edge Case:** Preventing deletion of the predefined subjects (Math, Physics, DBMS, OS).
-- **File:** `backend/src/index.ts`
-- **Line Number:** 40 - 43
-- **Handling:** When the `DELETE /subjects/:id` endpoint is called, the code explicitly checks if the ID belongs to the seeded default subjects (`[1, 2, 3, 4]`). If it does, it immediately returns a `403 Forbidden` response (`Cannot delete predefined subjects`).
-- **Without this handling:** A user could delete the foundational subjects (e.g., "Math"), which would execute the `ON DELETE CASCADE` rule in the database, silently wiping out all topics and flashcards associated with it and ruining the core experience of the app.
+**Edge Case:** Defending against global `postcss.config` leaks crashing the Vite server in dirty host environments (e.g., extracting the project ZIP into a `Downloads` folder).
+- **File:** `frontend/vite.config.ts`
+- **Line Number:** 6 - 8
+- **Handling:** I explicitly defined `css: { postcss: {} }` in the Vite configuration. This intercepts and overrides Vite's default behavior, which normally searches recursively up the filesystem tree to find PostCSS configurations.
+- **Without this handling:** If a reviewer extracts this project into a directory that happens to harbor a rogue `postcss.config.mjs` from a previous project, Vite would attempt to load it. Because we use `@tailwindcss/vite` natively instead of standard PostCSS plugins, encountering an external config requesting legacy Tailwind modules would instantly crash the `pnpm run dev` server on startup. This expressly isolates the setup so it reliably runs on *any* host machine!
+
+*(Note: Similarly, in `backend/package.json` line 26, `sqlite3` was explicitly added to `pnpm.onlyBuiltDependencies` to stop pnpm from blocking native C++ binding compilations on fresh unzips).*
 
 ---
 
