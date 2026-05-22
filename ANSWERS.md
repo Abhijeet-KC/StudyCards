@@ -70,8 +70,12 @@ pnpm run dev
 
 ## 5. Honest Gap
 
-**The Gap:** The **Study Mode** shuffling logic scales poorly and doesn't actually track learning progress. Right now, it pulls all flashcards into the browser and randomly shuffles the array in React state. It does let you click "Easy/Medium/Hard" which saves back to the database, but it ignores that difficulty when selecting the next cards.
+**The Gap:** There is **no responsive web design for mobile phones**. The UI layouts, navigation, and flashcard components were rapidly scaffolded for desktop resolutions. Viewing this app on a mobile device will result in a cramped menu, overflowing grids, and a squished or broken Study Mode interface.
 
 **How I would improve it:**
-If I had another day, I would fundamentally rework Study Mode to use a **Spaced Repetition Algorithm** (like SuperMemo-2 or Anki's logic).
-- **Fix implementation:** I'd add a `CardReviews` table tracking the next scheduled review date and the ease factor for each card. The backend would provide an endpoint (`GET /flashcards/due`) that intelligently returns only the cards the user is at risk of forgetting today, ordered by urgency, rather than doing a naive random shuffle on the client.
+If I had another day, I would systematically refactor the application to be fully mobile-responsive, adhering to a "mobile-first" layout methodology.
+
+- **Fix implementation:** I would leverage Tailwind's responsive screen modifier utility classes (`md:`, `lg:`). Specifically:
+  1. I would shift the main `grid` layouts into single-column `flex-col` layouts on small screens, swapping to grids only on `md:` breakpoints or larger.
+  2. Implement a hamburger menu to hide the bulky sidebar navigation behind a toggle on cellphones.
+  3. Ensure that touch targets on the flashcards, delete buttons, and forms are sufficiently sized (min `44px`) for thumb-tapping.
